@@ -139,6 +139,7 @@ endif
 # source files
 SRC_C = \
 	main.c \
+	loaddynlib.c \
 	gccollect.c \
 	unix_mphal.c \
 	mpthreadport.c \
@@ -159,11 +160,17 @@ LIB_SRC_C = $(addprefix lib/,\
 	timeutils/timeutils.c \
 	)
 
+LDFLAGS += -ldl -rdynamic
+# Avoid linker errors after introducing rdynamic
+MICROPY_FATFS = 0
+
 # FatFS VFS support
+ifeq ($(MICROPY_FATFS),1)
 LIB_SRC_C += $(addprefix lib/,\
 	oofatfs/ff.c \
 	oofatfs/ffunicode.c \
 	)
+endif
 
 OBJ = $(PY_O)
 OBJ += $(addprefix $(BUILD)/, $(SRC_C:.c=.o))
